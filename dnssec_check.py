@@ -12,7 +12,7 @@ def get_dns_servers(domain):
 
     try:
         # Query for the NS (Name Server) records of the domain
-        ns_response = resolver.query(domain, dns.rdatatype.NS)
+        ns_response = dns.resolver.resolve(domain, 'NS')
         print("DNS Servers (NS) for", domain)
         for ns in ns_response:
             print(ns)
@@ -30,7 +30,7 @@ def check_dnssec(domain):
 
     try:
         # Query the DS (Delegation Signer) record for the domain
-        ds_response = resolver.query(domain, dns.rdatatype.DS)
+        ds_response = dns.resolver.resolve(domain, 'DS')
         print("DNSSEC is enabled for", domain)
         print("DS Records:")
         for record in ds_response:
@@ -50,6 +50,8 @@ if __name__ == "__main__":
         domains = [line.strip() for line in file]
 
     for domain in domains:
+        print()
+        print(\\\\\\ LOOKING UP DOMAINS //////)
         check_dnssec(domain)
         get_dns_servers(domain)
         print()
