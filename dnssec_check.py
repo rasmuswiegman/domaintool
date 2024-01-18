@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-
 import dns.resolver
 import dns.message
 import dns.query
 import dns.rdatatype
+import sys
 
 def get_dns_servers(domain):
     # Set up a DNS resolver
@@ -44,15 +44,17 @@ def check_dnssec(domain):
         print(e)
 
 if __name__ == "__main__":
-    input_file = input("Enter the name of the text file with domains: ")
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <input_file>")
+        sys.exit(1)
+
+    input_file = sys.argv[1]
 
     with open(input_file, 'r') as file:
         domains = [line.strip() for line in file]
 
     for domain in domains:
         print()
-        print(\\\\\\ LOOKING UP DOMAINS //////)
         check_dnssec(domain)
         get_dns_servers(domain)
         print()
-
