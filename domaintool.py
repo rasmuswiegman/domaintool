@@ -52,9 +52,9 @@ def get_mx_records(domain):
     resolver = dns.resolver.Resolver()
 
     try:
-        # Query for the NS (Name Server) records of the domain
+        # Query for the MX (MAIL Server) records of the domain
         mx_response = dns.resolver.resolve(domain, 'MX')
-        print("MX Records (MX) for", domain)
+        print("MX Records for", domain)
         for MX in mx_response:
             print(MX)
     except dns.resolver.NXDOMAIN:
@@ -65,6 +65,24 @@ def get_mx_records(domain):
         print("Error while fetching Mail Servers (MX) for", domain)
         print(e)
 
+def get_txt_records(domain):
+    # Set up a DNS resolver
+    resolver = dns.resolver.Resolver()
+
+    try:
+        # Query for the TXT records of the domain
+        txt_response = dns.resolver.resolve(domain, 'TXT')
+        print("TXT Records for", domain)
+        for TXT in txt_response:
+            print(TXT)
+    except dns.resolver.NXDOMAIN:
+        print("TXT Records not found for", domain)
+    except dns.resolver.NoAnswer:
+        print("No TXTRecords found for", domain)
+    except dns.exception.DNSException as e:
+        print("Error while fetching TXT Records for", domain)
+        print(e)
+
 def print_help():
     print("Usage: ./dnssec.py <input_file> [OPTIONS]")
     print("OPTIONS:")
@@ -73,6 +91,7 @@ def print_help():
     print("  -dns       Look up Nameservers")
     print("  -mx        Look up MX records")
     print("  -dnssec    Look up if DNSSEC is enabled")
+    print("  -txt       Look up TXT Records")
     sys.exit(0)
 
 if __name__ == "__main__":
@@ -104,5 +123,8 @@ if __name__ == "__main__":
 
         if '-all' in selected_functions or '-mx' in selected_functions:
             get_mx_records(domain)
+
+        if '-all' in selected_functions or '-txt' in selected_functions:
+            get_txt_records(domain)
 
         print()
