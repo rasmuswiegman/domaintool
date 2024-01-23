@@ -14,3 +14,4 @@ Usage: ./domaintool.py <input_file> [OPTIONS]
 -dns       Look up Nameservers
 -mx        Look up MX records
 -dnssec    Look up if DNSSEC is enabled
+-txt       Look up TXT Records
