@@ -17,15 +17,15 @@ def get_dns_servers(domain):
     try:
         # Query for the NS (Name Server) records of the domain
         ns_response = dns.resolver.resolve(domain, 'NS')
-        print("DNS Servers (NS) for", domain)
+        print("DNS Servers for", domain)
         for ns in ns_response:
             print(ns)
     except dns.resolver.NXDOMAIN:
-        print("DNS Servers (NS) not found for", domain)
+        print("DNS Servers not found for", domain)
     except dns.resolver.NoAnswer:
-        print("No DNS Servers (NS) found for", domain)
+        print("No DNS Servers found for", domain)
     except dns.exception.DNSException as e:
-        print("Error while fetching DNS Servers (NS) for", domain)
+        print("Error while fetching DNS Servers for", domain)
         print(e)
 
 def check_dnssec(domain):
@@ -47,6 +47,24 @@ def check_dnssec(domain):
         print("Error while checking DNSSEC for", domain)
         print(e)
 
+def get_a_records(domain):
+    # Set up a DNS resolver
+    resolver = dns.resolver.Resolver()
+
+    try:
+        # Query for the MX (MAIL Server) records of the domain
+        a_response = dns.resolver.resolve(domain, 'A')
+        print("A Records for", domain)
+        for A in a_response:
+            print(A)
+    except dns.resolver.NXDOMAIN:
+        print("A Records not found for", domain)
+    except dns.resolver.NoAnswer:
+        print("No A Records found for", domain)
+    except dns.exception.DNSException as e:
+        print("Error while fetching A records for", domain)
+        print(e)
+
 def get_mx_records(domain):
     # Set up a DNS resolver
     resolver = dns.resolver.Resolver()
@@ -58,11 +76,11 @@ def get_mx_records(domain):
         for MX in mx_response:
             print(MX)
     except dns.resolver.NXDOMAIN:
-        print("MX Records (MX) not found for", domain)
+        print("MX Records not found for", domain)
     except dns.resolver.NoAnswer:
-        print("No MX Records (MX) found for", domain)
+        print("No MX Records found for", domain)
     except dns.exception.DNSException as e:
-        print("Error while fetching Mail Servers (MX) for", domain)
+        print("Error while fetching Mail Servers for", domain)
         print(e)
 
 def get_txt_records(domain):
@@ -126,5 +144,8 @@ if __name__ == "__main__":
 
         if '-all' in selected_functions or '-txt' in selected_functions:
             get_txt_records(domain)
+
+        if '-all' in selected_functions or '-a' in selected_functions:
+            get_a_records(domain)
 
         print()
