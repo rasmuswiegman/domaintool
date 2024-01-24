@@ -14,7 +14,7 @@ def get_a_records(domain):
     resolver = dns.resolver.Resolver()
 
     try:
-        # Query for the MX (MAIL Server) records of the domain
+        # Query for the A records of the domain
         a_response = dns.resolver.resolve(domain, 'A')
         print("A Records for", domain)
         for A in a_response:
@@ -129,23 +129,21 @@ if __name__ == "__main__":
     for domain in domains:
         print()
         print(f"{RED}LOOKING UP {GREEN}{domain}{ENDC}")
-        #print(f"{RED}LOOKING UP {domain}{ENDC}")
-        #print(f"{RED}LOOKING UP", domain"{ENDC}")
         print()
 
         if '-all' in selected_functions or '-dns' in selected_functions:
             get_dns_servers(domain)
 
-        if '-all' in selected_functions or '-dnssec' in selected_functions:
-            check_dnssec(domain)
-
+        if '-all' in selected_functions or '-a' in selected_functions:
+            get_a_records(domain)
+                    
         if '-all' in selected_functions or '-mx' in selected_functions:
             get_mx_records(domain)
 
+        if '-all' in selected_functions or '-dnssec' in selected_functions:
+            check_dnssec(domain)
+
         if '-all' in selected_functions or '-txt' in selected_functions:
             get_txt_records(domain)
-
-        if '-all' in selected_functions or '-a' in selected_functions:
-            get_a_records(domain)
 
         print()
