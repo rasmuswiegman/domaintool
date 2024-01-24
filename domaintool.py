@@ -9,6 +9,23 @@ GREEN = '\033[32;1m'
 RED = '\033[91m'
 ENDC = '\033[0m'
 
+def get_a_records(domain):
+    # Set up a DNS resolver
+    resolver = dns.resolver.Resolver()
+
+    try:
+        # Query for the MX (MAIL Server) records of the domain
+        a_response = dns.resolver.resolve(domain, 'A')
+        print("A Records for", domain)
+        for A in a_response:
+            print(A)
+    except dns.resolver.NXDOMAIN:
+        print("A Records not found for", domain)
+    except dns.resolver.NoAnswer:
+        print("No A Records found for", domain)
+    except dns.exception.DNSException as e:
+        print("Error while fetching A records for", domain)
+        print(e)
 
 def get_dns_servers(domain):
     # Set up a DNS resolver
@@ -45,24 +62,6 @@ def check_dnssec(domain):
         print("No DS records found for", domain)
     except dns.exception.DNSException as e:
         print("Error while checking DNSSEC for", domain)
-        print(e)
-
-def get_a_records(domain):
-    # Set up a DNS resolver
-    resolver = dns.resolver.Resolver()
-
-    try:
-        # Query for the MX (MAIL Server) records of the domain
-        a_response = dns.resolver.resolve(domain, 'A')
-        print("A Records for", domain)
-        for A in a_response:
-            print(A)
-    except dns.resolver.NXDOMAIN:
-        print("A Records not found for", domain)
-    except dns.resolver.NoAnswer:
-        print("No A Records found for", domain)
-    except dns.exception.DNSException as e:
-        print("Error while fetching A records for", domain)
         print(e)
 
 def get_mx_records(domain):
@@ -110,6 +109,7 @@ def print_help():
     print("  -mx        Look up MX records")
     print("  -dnssec    Look up if DNSSEC is enabled")
     print("  -txt       Look up TXT Records")
+    print("  -a         Look up A Records")
     sys.exit(0)
 
 if __name__ == "__main__":
