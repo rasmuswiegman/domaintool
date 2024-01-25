@@ -2,6 +2,7 @@
 
 import dns.resolver
 import dns.exception
+import socket
 import sys
 
 # colors
@@ -80,11 +81,24 @@ def get_txt_records(domain, resolver):
         print("Error while fetching TXT Records for", domain)
         print(e)
 
+def reverse_lookup(ip):
+    try:
+        # Perform reverse lookup using socket
+        domain = socket.gethostbyaddr(ip)[0]
+        print(f"Reverse Lookup for {ip}: {domain}")
+    except socket.herror as e:
+        print(f"No PTR record found for {ip}")
+        print(f"Error details: {e}")
+    except Exception as e:
+        print(f"Error while performing reverse lookup for {ip}")
+        print(f"Error details: {e}")
+
 def process_domains(domains, options, resolver):
     for domain in domains:
         print()
         print(f"{RED}LOOKING UP {GREEN}{domain}{ENDC}")
         print()
+        print("Used DNS Server:", resolver.nameservers)
 
         if '-all' in options or '-dns' in options:
             get_dns_servers(domain, resolver)
@@ -95,11 +109,14 @@ def process_domains(domains, options, resolver):
         if '-all' in options or '-mx' in options:
             get_mx_records(domain, resolver)
 
-        if '-all' in options or '-dnssec' in options:
+        if '-all' in options or '-dnssec' in options or '-ds' in options:
             check_dnssec(domain, resolver)
 
         if '-all' in options or '-txt' in options:
             get_txt_records(domain, resolver)
+        
+        if '-r' in options:
+            reverse_lookup(ip)
 
         print()
 
@@ -112,17 +129,23 @@ def process_file(file_path, options, resolver):
         print(f"Error: File '{file_path}' not found.")
         sys.exit(1)
 
+def process_ip(ip, options):
+    print()
+    print(f"{RED}LOOKING UP {GREEN}{ip}{ENDC}")
+    print()
+
 def print_help():
     print("Usage: ./dnssec.py -f <file_path> [OPTIONS]")
-    print("       ./dnssec.py [OPTIONS] <domain1> <domain2> ...")
+    print("./dnssec.py [OPTIONS] <domain1> <domain2> ...")
     print("OPTIONS:")
-    print("  -h         Show this help message")
-    print("  -all       Look up all")
-    print("  -dns       Look up Nameservers")
-    print("  -mx        Look up MX records")
-    print("  -dnssec    Look up if DNSSEC is enabled")
-    print("  -txt       Look up TXT Records")
-    print("  -a         Look up A Records")
+    print("  -h             Show this help message")
+    print("  -all           Look up all")
+    print("  -dns           Look up Nameservers")
+    print("  -mx            Look up MX records")
+    print("  -dnssec/ds     Look up if DNSSEC is enabled")
+    print("  -txt           Look up TXT Records")
+    print("  -a             Look up A Records")
+    print("  -r             Perform reverse lookup from IP")
     sys.exit(0)
 
 if __name__ == "__main__":
@@ -133,8 +156,9 @@ if __name__ == "__main__":
     options = []
     domains = []
     file_path = None
+    ip = None
 
-    # Separate file path, options, and domains
+    # Separate file path, options, domains, and IP
     i = 0
     while i < len(args):
         arg = args[i]
@@ -145,6 +169,13 @@ if __name__ == "__main__":
             else:
                 print("Error: Missing file path after '-f'.")
                 sys.exit(1)
+        elif arg == '-r':
+            i += 1
+            if i < len(args):
+                ip = args[i]
+            else:
+                print("Error: Missing IP address after '-r'.")
+                sys.exit(1)
         elif arg.startswith('-'):
             options.append(arg)
         else:
@@ -154,8 +185,8 @@ if __name__ == "__main__":
     if '-h' in options or '--help' in options:
         print_help()
 
-    if not file_path and not domains:
-        print("Error: At least one domain or a file path must be provided.")
+    if not file_path and not domains and not ip:
+        print("Error: At least one domain, a file path, or an IP address must be provided.")
         print_help()
 
     resolver = dns.resolver.Resolver()
@@ -168,4 +199,7 @@ if __name__ == "__main__":
 
     if domains:
         process_domains(domains, options, resolver)
+
+    if ip:
+        process_ip(ip, options)
 
