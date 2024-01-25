@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import dns.resolver
-import dns.exception
-import socket
+import dns.reversename
 import sys
 
 # colors
@@ -81,16 +80,24 @@ def get_txt_records(domain, resolver):
         print("Error while fetching TXT Records for", domain)
         print(e)
 
-def reverse_lookup(ip):
+def reverse_lookup(ip, resolver):
     try:
-        # Perform reverse lookup using socket
-        domain = socket.gethostbyaddr(ip)[0]
-        print(f"Reverse Lookup for {ip}: {domain}")
-    except socket.herror as e:
+        # Create PTR record name from IP
+        reversed_ip = dns.reversename.from_address(ip)
+        ptr_response = resolver.resolve(reversed_ip, 'PTR')
+        
+        print(f"Reverse Lookup for {ip}:")
+        for ptr_record in ptr_response:
+            print(ptr_record)
+    except dns.resolver.NXDOMAIN:
         print(f"No PTR record found for {ip}")
+    except dns.resolver.NoAnswer:
+        print(f"No PTR record found for {ip}")
+    except dns.exception.DNSException as e:
+        print(f"Error while performing reverse lookup for {ip}")
         print(f"Error details: {e}")
     except Exception as e:
-        print(f"Error while performing reverse lookup for {ip}")
+        print(f"Unexpected error during reverse lookup for {ip}")
         print(f"Error details: {e}")
 
 def process_domains(domains, options, resolver):
@@ -98,7 +105,6 @@ def process_domains(domains, options, resolver):
         print()
         print(f"{RED}LOOKING UP {GREEN}{domain}{ENDC}")
         print()
-        print("Used DNS Server:", resolver.nameservers)
 
         if '-all' in options or '-dns' in options:
             get_dns_servers(domain, resolver)
@@ -109,14 +115,11 @@ def process_domains(domains, options, resolver):
         if '-all' in options or '-mx' in options:
             get_mx_records(domain, resolver)
 
-        if '-all' in options or '-dnssec' in options or '-ds' in options:
+        if '-all' in options or '-dnssec' in options:
             check_dnssec(domain, resolver)
 
         if '-all' in options or '-txt' in options:
             get_txt_records(domain, resolver)
-        
-        if '-r' in options:
-            reverse_lookup(ip)
 
         print()
 
@@ -129,23 +132,28 @@ def process_file(file_path, options, resolver):
         print(f"Error: File '{file_path}' not found.")
         sys.exit(1)
 
-def process_ip(ip, options):
+def process_ip(ip, options, resolver):
     print()
     print(f"{RED}LOOKING UP {GREEN}{ip}{ENDC}")
     print()
 
+    if '-r' in options:
+        reverse_lookup(ip, resolver)
+
+    print()
+
 def print_help():
     print("Usage: ./dnssec.py -f <file_path> [OPTIONS]")
-    print("./dnssec.py [OPTIONS] <domain1> <domain2> ...")
+    print("       ./dnssec.py [OPTIONS] <domain1> <domain2> ...")
     print("OPTIONS:")
-    print("  -h             Show this help message")
-    print("  -all           Look up all")
-    print("  -dns           Look up Nameservers")
-    print("  -mx            Look up MX records")
-    print("  -dnssec/ds     Look up if DNSSEC is enabled")
-    print("  -txt           Look up TXT Records")
-    print("  -a             Look up A Records")
-    print("  -r             Perform reverse lookup from IP")
+    print("  -h         Show this help message")
+    print("  -all       Look up all")
+    print("  -dns       Look up Nameservers")
+    print("  -mx        Look up MX records")
+    print("  -dnssec    Look up if DNSSEC is enabled")
+    print("  -txt       Look up TXT Records")
+    print("  -a         Look up A Records")
+    print("  -r         Perform reverse lookup from IP")
     sys.exit(0)
 
 if __name__ == "__main__":
@@ -201,5 +209,4 @@ if __name__ == "__main__":
         process_domains(domains, options, resolver)
 
     if ip:
-        process_ip(ip, options)
-
+        process_ip(ip, options, resolver)
