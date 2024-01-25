@@ -143,8 +143,8 @@ def process_ip(ip, options, resolver):
     print()
 
 def print_help():
-    print("Usage: ./dnssec.py -f <file_path> [OPTIONS]")
-    print("       ./dnssec.py [OPTIONS] <domain1> <domain2> ...")
+    print("Usage: ./domaintool.py -f <file_path> [OPTIONS]")
+    print("       ./domaintool.py [OPTIONS] <domain1> <domain2> ...")
     print("OPTIONS:")
     print("  -h         Show this help message")
     print("  -all       Look up all")
