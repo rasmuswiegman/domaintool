@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import dns.resolver
-import dns.exception
+import dns.reversename
 import sys
 
 # colors
@@ -9,13 +9,9 @@ GREEN = '\033[32;1m'
 RED = '\033[91m'
 ENDC = '\033[0m'
 
-def get_a_records(domain):
-    # Set up a DNS resolver
-    resolver = dns.resolver.Resolver()
-
+def get_a_records(domain, resolver):
     try:
-        # Query for the A records of the domain
-        a_response = dns.resolver.resolve(domain, 'A')
+        a_response = resolver.resolve(domain, 'A')
         print("A Records for", domain)
         for A in a_response:
             print(A)
@@ -27,13 +23,9 @@ def get_a_records(domain):
         print("Error while fetching A records for", domain)
         print(e)
 
-def get_dns_servers(domain):
-    # Set up a DNS resolver
-    resolver = dns.resolver.Resolver()
-
+def get_dns_servers(domain, resolver):
     try:
-        # Query for the NS (Name Server) records of the domain
-        ns_response = dns.resolver.resolve(domain, 'NS')
+        ns_response = resolver.resolve(domain, 'NS')
         print("DNS Servers for", domain)
         for ns in ns_response:
             print(ns)
@@ -45,13 +37,9 @@ def get_dns_servers(domain):
         print("Error while fetching DNS Servers for", domain)
         print(e)
 
-def check_dnssec(domain):
-    # Set up a DNS resolver
-    resolver = dns.resolver.Resolver()
-
+def check_dnssec(domain, resolver):
     try:
-        # Query the DS (Delegation Signer) record for the domain
-        ds_response = dns.resolver.resolve(domain, 'DS')
+        ds_response = resolver.resolve(domain, 'DS')
         print("DNSSEC is enabled for", domain)
         print("DS Records:")
         for record in ds_response:
@@ -64,13 +52,9 @@ def check_dnssec(domain):
         print("Error while checking DNSSEC for", domain)
         print(e)
 
-def get_mx_records(domain):
-    # Set up a DNS resolver
-    resolver = dns.resolver.Resolver()
-
+def get_mx_records(domain, resolver):
     try:
-        # Query for the MX (MAIL Server) records of the domain
-        mx_response = dns.resolver.resolve(domain, 'MX')
+        mx_response = resolver.resolve(domain, 'MX')
         print("MX Records for", domain)
         for MX in mx_response:
             print(MX)
@@ -82,26 +66,85 @@ def get_mx_records(domain):
         print("Error while fetching Mail Servers for", domain)
         print(e)
 
-def get_txt_records(domain):
-    # Set up a DNS resolver
-    resolver = dns.resolver.Resolver()
-
+def get_txt_records(domain, resolver):
     try:
-        # Query for the TXT records of the domain
-        txt_response = dns.resolver.resolve(domain, 'TXT')
+        txt_response = resolver.resolve(domain, 'TXT')
         print("TXT Records for", domain)
         for TXT in txt_response:
             print(TXT)
     except dns.resolver.NXDOMAIN:
         print("TXT Records not found for", domain)
     except dns.resolver.NoAnswer:
-        print("No TXTRecords found for", domain)
+        print("No TXT Records found for", domain)
     except dns.exception.DNSException as e:
         print("Error while fetching TXT Records for", domain)
         print(e)
 
+def reverse_lookup(ip, resolver):
+    try:
+        # Create PTR record name from IP
+        reversed_ip = dns.reversename.from_address(ip)
+        ptr_response = resolver.resolve(reversed_ip, 'PTR')
+        
+        print(f"Reverse Lookup for {ip}:")
+        for ptr_record in ptr_response:
+            print(ptr_record)
+    except dns.resolver.NXDOMAIN:
+        print(f"No PTR record found for {ip}")
+    except dns.resolver.NoAnswer:
+        print(f"No PTR record found for {ip}")
+    except dns.exception.DNSException as e:
+        print(f"Error while performing reverse lookup for {ip}")
+        print(f"Error details: {e}")
+    except Exception as e:
+        print(f"Unexpected error during reverse lookup for {ip}")
+        print(f"Error details: {e}")
+
+def process_domains(domains, options, resolver):
+    for domain in domains:
+        print()
+        print(f"{RED}LOOKING UP {GREEN}{domain}{ENDC}")
+        print()
+
+        if '-all' in options or '-dns' in options:
+            get_dns_servers(domain, resolver)
+
+        if '-all' in options or '-a' in options:
+            get_a_records(domain, resolver)
+
+        if '-all' in options or '-mx' in options:
+            get_mx_records(domain, resolver)
+
+        if '-all' in options or '-dnssec' in options:
+            check_dnssec(domain, resolver)
+
+        if '-all' in options or '-txt' in options:
+            get_txt_records(domain, resolver)
+
+        print()
+
+def process_file(file_path, options, resolver):
+    try:
+        with open(file_path, 'r') as file:
+            domains = [line.strip() for line in file]
+            process_domains(domains, options, resolver)
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        sys.exit(1)
+
+def process_ip(ip, options, resolver):
+    print()
+    print(f"{RED}LOOKING UP {GREEN}{ip}{ENDC}")
+    print()
+
+    if '-r' in options:
+        reverse_lookup(ip, resolver)
+
+    print()
+
 def print_help():
-    print("Usage: ./dnssec.py <input_file> [OPTIONS]")
+    print("Usage: ./dnssec.py -f <file_path> [OPTIONS]")
+    print("       ./dnssec.py [OPTIONS] <domain1> <domain2> ...")
     print("OPTIONS:")
     print("  -h         Show this help message")
     print("  -all       Look up all")
@@ -110,40 +153,60 @@ def print_help():
     print("  -dnssec    Look up if DNSSEC is enabled")
     print("  -txt       Look up TXT Records")
     print("  -a         Look up A Records")
+    print("  -r         Perform reverse lookup from IP")
     sys.exit(0)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print_help()
 
-    input_file = sys.argv[1]
+    args = sys.argv[1:]
+    options = []
+    domains = []
+    file_path = None
+    ip = None
 
-    if '-h' in sys.argv or '--help' in sys.argv:
+    # Separate file path, options, domains, and IP
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == '-f':
+            i += 1
+            if i < len(args):
+                file_path = args[i]
+            else:
+                print("Error: Missing file path after '-f'.")
+                sys.exit(1)
+        elif arg == '-r':
+            i += 1
+            if i < len(args):
+                ip = args[i]
+            else:
+                print("Error: Missing IP address after '-r'.")
+                sys.exit(1)
+        elif arg.startswith('-'):
+            options.append(arg)
+        else:
+            domains.append(arg)
+        i += 1
+
+    if '-h' in options or '--help' in options:
         print_help()
 
-    selected_functions = sys.argv[2:]
+    if not file_path and not domains and not ip:
+        print("Error: At least one domain, a file path, or an IP address must be provided.")
+        print_help()
 
-    with open(input_file, 'r') as file:
-        domains = [line.strip() for line in file]
+    resolver = dns.resolver.Resolver()
+    resolver.timeout = 1  # Set DNS timeout (adjust as needed)
 
-    for domain in domains:
-        print()
-        print(f"{RED}LOOKING UP {GREEN}{domain}{ENDC}")
-        print()
+    print("Using DNS Server:", resolver.nameservers)
 
-        if '-all' in selected_functions or '-dns' in selected_functions:
-            get_dns_servers(domain)
+    if file_path:
+        process_file(file_path, options, resolver)
 
-        if '-all' in selected_functions or '-a' in selected_functions:
-            get_a_records(domain)
-                    
-        if '-all' in selected_functions or '-mx' in selected_functions:
-            get_mx_records(domain)
+    if domains:
+        process_domains(domains, options, resolver)
 
-        if '-all' in selected_functions or '-dnssec' in selected_functions:
-            check_dnssec(domain)
-
-        if '-all' in selected_functions or '-txt' in selected_functions:
-            get_txt_records(domain)
-
-        print()
+    if ip:
+        process_ip(ip, options, resolver)
