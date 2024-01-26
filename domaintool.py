@@ -2,6 +2,7 @@
 
 import dns.resolver
 import dns.reversename
+import socket
 import sys
 
 # colors
@@ -80,20 +81,13 @@ def get_txt_records(domain, resolver):
         print("Error while fetching TXT Records for", domain)
         print(e)
 
-def reverse_lookup(ip, resolver):
+def reverse_lookup(ip):
     try:
-        # Create PTR record name from IP
-        reversed_ip = dns.reversename.from_address(ip)
-        ptr_response = resolver.resolve(reversed_ip, 'PTR')
-        
+        hostnames, _, _ = socket.gethostbyaddr(ip)
         print(f"Reverse Lookup for {ip}:")
-        for ptr_record in ptr_response:
-            print(ptr_record)
-    except dns.resolver.NXDOMAIN:
-        print(f"No PTR record found for {ip}")
-    except dns.resolver.NoAnswer:
-        print(f"No PTR record found for {ip}")
-    except dns.exception.DNSException as e:
+        for hostname in hostnames:
+            print(hostname)
+    except socket.herror as e:
         print(f"Error while performing reverse lookup for {ip}")
         print(f"Error details: {e}")
     except Exception as e:
@@ -134,7 +128,7 @@ def process_file(file_path, options, resolver):
 
 def process_ip(ip, options, resolver):
     print()
-    print(f"{YELLOW}LOOKING UP {ip}{ENDC}")
+    print(f"{YELLOW}LOOKING UP IP - {ip}{ENDC}")
     print()
 
     if '-r' in options:
@@ -149,11 +143,13 @@ def print_help():
     print("  -h         Show this help message")
     print("  -all       Look up all")
     print("  -dns       Look up Nameservers")
+    print("  -ns        Same as -dns")
     print("  -mx        Look up MX records")
     print("  -dnssec    Look up if DNSSEC is enabled")
     print("  -txt       Look up TXT Records")
     print("  -a         Look up A Records")
     print("  -r         Perform reverse lookup from IP")
+    print("  -d, --dns-server <custom_dns>  Specify a custom DNS server")
     sys.exit(0)
 
 if __name__ == "__main__":
@@ -165,8 +161,9 @@ if __name__ == "__main__":
     domains = []
     file_path = None
     ip = None
+    custom_dns = None
 
-    # Separate file path, options, domains, and IP
+    # Separate file path, options, domains, IP, and custom DNS
     i = 0
     while i < len(args):
         arg = args[i]
@@ -184,6 +181,13 @@ if __name__ == "__main__":
             else:
                 print("Error: Missing IP address after '-r'.")
                 sys.exit(1)
+        elif arg in ['-d', '--dns-server']:
+            i += 1
+            if i < len(args):
+                custom_dns = args[i]
+            else:
+                print("Error: Missing custom DNS server after '-d' or '--dns-server'.")
+                sys.exit(1)
         elif arg.startswith('-'):
             options.append(arg)
         else:
@@ -198,6 +202,11 @@ if __name__ == "__main__":
         print_help()
 
     resolver = dns.resolver.Resolver()
+
+    # Set custom DNS server if provided
+    if custom_dns:
+        resolver.nameservers = [custom_dns]
+
     resolver.timeout = 1  # Set DNS timeout (adjust as needed)
 
     print("Using DNS Server:", resolver.nameservers)
@@ -210,3 +219,4 @@ if __name__ == "__main__":
 
     if ip:
         process_ip(ip, options, resolver)
+
