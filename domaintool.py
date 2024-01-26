@@ -7,18 +7,19 @@ import sys
 # colors
 GREEN = '\033[32;1m'
 RED = '\033[91m'
+YELLOW = '\033[33m'
 ENDC = '\033[0m'
 
 def get_a_records(domain, resolver):
     try:
         a_response = resolver.resolve(domain, 'A')
-        print("A Records for", domain)
+        print(f"{YELLOW}A Records for {domain}{ENDC}")
         for A in a_response:
-            print(A)
+            print(f"{GREEN}{A}{ENDC}")
     except dns.resolver.NXDOMAIN:
-        print("A Records not found for", domain)
+        print(f"{RED}No A Records not found for (NXDOMAIN) {domain}{ENDC}")
     except dns.resolver.NoAnswer:
-        print("No A Records found for", domain)
+        print(f"{RED}No A Records found for (NoAnswer) {domain}{ENDC}")
     except dns.exception.DNSException as e:
         print("Error while fetching A records for", domain)
         print(e)
@@ -26,13 +27,13 @@ def get_a_records(domain, resolver):
 def get_dns_servers(domain, resolver):
     try:
         ns_response = resolver.resolve(domain, 'NS')
-        print("DNS Servers for", domain)
+        print(f"{YELLOW}DNS Servers for {domain}{ENDC}")
         for ns in ns_response:
-            print(ns)
+            print(f"{GREEN}{ns}{ENDC}")
     except dns.resolver.NXDOMAIN:
-        print("DNS Servers not found for", domain)
+        print(f"{RED}No DNS Servers found for (NXDOMAIN) {domain}{ENDC}")
     except dns.resolver.NoAnswer:
-        print("No DNS Servers found for", domain)
+        print(f"{RED}No DNS Servers found for (NoAnswer) {domain}{ENDC}")
     except dns.exception.DNSException as e:
         print("Error while fetching DNS Servers for", domain)
         print(e)
@@ -40,14 +41,13 @@ def get_dns_servers(domain, resolver):
 def check_dnssec(domain, resolver):
     try:
         ds_response = resolver.resolve(domain, 'DS')
-        print("DNSSEC is enabled for", domain)
-        print("DS Records:")
+        print(f"{YELLOW}DNSSEC is enabled for {domain}{ENDC}")
         for record in ds_response:
-            print(record)
+            print(f"{GREEN}{record}{ENDC}")
     except dns.resolver.NXDOMAIN:
-        print("DNSSEC is not enabled for", domain)
+        print(f"{RED}DNSSEC is not enabled for (NXDOMAIN) {domain}{ENDC}")
     except dns.resolver.NoAnswer:
-        print("No DS records found for", domain)
+        print(f"{RED}No DS Records found for (NoAnswer) {domain}{ENDC}")
     except dns.exception.DNSException as e:
         print("Error while checking DNSSEC for", domain)
         print(e)
@@ -55,13 +55,13 @@ def check_dnssec(domain, resolver):
 def get_mx_records(domain, resolver):
     try:
         mx_response = resolver.resolve(domain, 'MX')
-        print("MX Records for", domain)
+        print(f"{YELLOW}MX Records for {domain}{ENDC}")
         for MX in mx_response:
-            print(MX)
+            print(f"{GREEN}{MX}{ENDC}")
     except dns.resolver.NXDOMAIN:
-        print("MX Records not found for", domain)
+        print(f"{RED}MX Records not found for (NXDOMAIN) {domain}{ENDC}")
     except dns.resolver.NoAnswer:
-        print("No MX Records found for", domain)
+        print(f"{RED}No MX Records found for (NoAnswer) {domain}{ENDC}")
     except dns.exception.DNSException as e:
         print("Error while fetching Mail Servers for", domain)
         print(e)
@@ -69,13 +69,13 @@ def get_mx_records(domain, resolver):
 def get_txt_records(domain, resolver):
     try:
         txt_response = resolver.resolve(domain, 'TXT')
-        print("TXT Records for", domain)
+        print(f"{YELLOW}TXT records for {domain}{ENDC}")
         for TXT in txt_response:
-            print(TXT)
+            print(f"{GREEN}{TXT}{ENDC}")
     except dns.resolver.NXDOMAIN:
-        print("TXT Records not found for", domain)
+        print(f"{RED}TXT Records not found for (NXDOMAIN) {domain}{ENDC}")
     except dns.resolver.NoAnswer:
-        print("No TXT Records found for", domain)
+        print(f"{RED}No TXT Records found for (NoAnswer) {domain}{ENDC}")
     except dns.exception.DNSException as e:
         print("Error while fetching TXT Records for", domain)
         print(e)
@@ -103,10 +103,10 @@ def reverse_lookup(ip, resolver):
 def process_domains(domains, options, resolver):
     for domain in domains:
         print()
-        print(f"{RED}LOOKING UP {GREEN}{domain}{ENDC}")
+        print(f"{YELLOW}LOOKING UP {domain}{ENDC}")
         print()
 
-        if '-all' in options or '-dns' in options:
+        if '-all' in options or '-dns' in options or '-ns' in options:
             get_dns_servers(domain, resolver)
 
         if '-all' in options or '-a' in options:
@@ -134,7 +134,7 @@ def process_file(file_path, options, resolver):
 
 def process_ip(ip, options, resolver):
     print()
-    print(f"{RED}LOOKING UP {GREEN}{ip}{ENDC}")
+    print(f"{YELLOW}LOOKING UP {ip}{ENDC}")
     print()
 
     if '-r' in options:
