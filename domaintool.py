@@ -2,7 +2,6 @@
 
 import dns.resolver
 import dns.reversename
-import socket
 import sys
 
 # colors
@@ -81,13 +80,19 @@ def get_txt_records(domain, resolver):
         print("Error while fetching TXT Records for", domain)
         print(e)
 
-def reverse_lookup(ip):
+def reverse_lookup(ip, resolver):
     try:
-        hostnames, _, _ = socket.gethostbyaddr(ip)
+        reversed_ip = dns.reversename.from_address(ip)
+        ptr_response = resolver.query(reversed_ip, 'PTR')
+
         print(f"Reverse Lookup for {ip}:")
-        for hostname in hostnames:
-            print(hostname)
-    except socket.herror as e:
+        for ptr_record in ptr_response:
+            print(ptr_record)
+    except dns.resolver.NXDOMAIN:
+        print(f"No PTR record found for {ip}")
+    except dns.resolver.NoAnswer:
+        print(f"No PTR record found for {ip}")
+    except dns.exception.DNSException as e:
         print(f"Error while performing reverse lookup for {ip}")
         print(f"Error details: {e}")
     except Exception as e:
