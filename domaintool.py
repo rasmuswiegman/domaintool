@@ -80,6 +80,20 @@ def get_txt_records(domain, resolver):
         print("Error while fetching TXT Records for", domain)
         print(e)
 
+def get_dmarc_policy(domain, resolver):
+    try:
+        dmarc_response = resolver.resolve(f'_dmarc.{domain}', 'TXT')
+        print(f"{YELLOW}DMARC Policy for {domain}{ENDC}")
+        for record in dmarc_response:
+            print(f"{GREEN}{record}{ENDC}")
+    except dns.resolver.NXDOMAIN:
+        print(f"{RED}DMARC Policy not found for (NXDOMAIN) {domain}{ENDC}")
+    except dns.resolver.NoAnswer:
+        print(f"{RED}No DMARC Policy found for (NoAnswer) {domain}{ENDC}")
+    except dns.exception.DNSException as e:
+        print("Error while fetching DMARC Policy for", domain)
+        print(e)
+
 def reverse_lookup(ip, resolver):
     try:
         reversed_ip = dns.reversename.from_address(ip)
@@ -120,6 +134,8 @@ def process_domains(domains, options, resolver):
         if '-all' in options or '-txt' in options:
             get_txt_records(domain, resolver)
 
+        if '-all' in options or '-dmarc' in options:
+            get_dmarc_policy(domain, resolver)
         print()
 
 def process_file(file_path, options, resolver):
@@ -153,6 +169,7 @@ def print_help():
     print("  -dnssec    Look up if DNSSEC is enabled")
     print("  -txt       Look up TXT Records")
     print("  -a         Look up A Records")
+    print("  -dmarc     Look up DMARC Policy")
     print("  -r         Perform reverse lookup from IP")
     print("  -d, --dns-server <custom_dns>  Specify a custom DNS server")
     sys.exit(0)
