@@ -241,4 +241,3 @@ if __name__ == "__main__":
 
     if ip:
         process_ip(ip, options, resolver)
-
