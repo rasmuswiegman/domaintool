@@ -28,4 +28,4 @@ OPTIONS:
 In the folder gui-option/dist/ ypu can run the script as a GUI application.
 
 <br>
-# Please for any improvements or other suggestions, create an issue or send an email..
+Please for any improvements or other suggestions, create an issue or send an email..
