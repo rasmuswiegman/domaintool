@@ -8,6 +8,7 @@ Python script to gather information, regarding domains in a list
 Usage domaintool.py
 
  Usage: ./domaintool.py -f <file_path> [OPTIONS]
+<br>
         ./domaintool.py [OPTIONS] <domain1> <domain2> ...
 
 OPTIONS:
