@@ -21,3 +21,11 @@ OPTIONS:
   -txt          Look up TXT Records
   -a            Look up A Records
   -r            Perform reverse lookup from IP
+
+
+<br>
+<br>
+In the folder gui-option/dist/ ypu can run the script as a GUI application.
+
+<br>
+# Please for any improvements or other suggestions, create an issue or send an email..
