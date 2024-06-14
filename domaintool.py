@@ -119,7 +119,7 @@ def process_domains(domains, options, resolver):
         print(f"{YELLOW}LOOKING UP {domain}{ENDC}")
         print()
 
-        if '-all' in options or '-dns' in options or '-ns' in options:
+        if '-all' in options or '-ns' in options:
             get_dns_servers(domain, resolver)
 
         if '-all' in options or '-a' in options:
