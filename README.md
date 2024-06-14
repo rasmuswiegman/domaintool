@@ -1,6 +1,8 @@
 # domain-tool
 
 Created by Rasmus Wiegman \ admin@latency.dk
+      
+    -  Please for any improvements or other suggestions, create an issue or send an email..
 
 
 Python script to gather information, regarding domains in a list
@@ -23,10 +25,4 @@ OPTIONS:
   -r            Perform reverse lookup from IP
 
 
-<br>
-<br>
-In the folder gui-option/dist/ ypu can run the script as a GUI application.
-
-<br>
-<br>
-Please for any improvements or other suggestions, create an issue or send an email..
+       In the folder gui-option/dist/ ypu can run the script as a GUI application.
