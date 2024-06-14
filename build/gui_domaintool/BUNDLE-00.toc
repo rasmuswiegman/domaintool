@@ -1,0 +1,3 @@
+([('gui_domaintool',
+   '/Users/rwi/github/domaintool/dist/gui_domaintool',
+   'EXECUTABLE')],)

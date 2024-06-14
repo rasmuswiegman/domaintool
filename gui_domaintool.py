@@ -141,23 +141,25 @@ def lookup():
         if '-all' in options or '-dmarc' in options:
             get_dmarc_policy(domain, resolver, text_widget)
 
-    if ip and '-r' in options:
+    if ip:
         text_widget.insert(tk.END, f"LOOKING UP IP - {ip}:\n")
-        reverse_lookup(ip, resolver, text_widget)
+        if '-r' in options:
+            reverse_lookup(ip, resolver, text_widget)
 
+# Create the main window
 root = tk.Tk()
 root.title("DNS Lookup Tool")
 
 frame = tk.Frame(root)
 frame.pack(padx=10, pady=10)
 
-tk.Label(frame, text="Domain:").grid(row=0, column=0, sticky=tk.E)
-entry_domain = tk.Entry(frame)
-entry_domain.grid(row=0, column=1, padx=5, pady=5)
+tk.Label(frame, text="Domain:").grid(row=0, column=0, sticky=tk.W)
+entry_domain = tk.Entry(frame, width=50)
+entry_domain.grid(row=0, column=1)
 
-tk.Label(frame, text="IP:").grid(row=1, column=0, sticky=tk.E)
-entry_ip = tk.Entry(frame)
-entry_ip.grid(row=1, column=1, padx=5, pady=5)
+tk.Label(frame, text="IP:").grid(row=1, column=0, sticky=tk.W)
+entry_ip = tk.Entry(frame, width=50)
+entry_ip.grid(row=1, column=1)
 
 var_all = tk.BooleanVar()
 var_dns = tk.BooleanVar()
@@ -180,10 +182,16 @@ tk.Checkbutton(frame, text="DMARC", variable=var_dmarc).grid(row=5, column=1, st
 tk.Checkbutton(frame, text="Reverse Lookup", variable=var_reverse).grid(row=6, column=0, sticky=tk.W)
 
 btn_lookup = tk.Button(frame, text="Lookup", command=lookup)
-btn_lookup.grid(row=7, column=0, columnspan=2, pady=10)
+btn_lookup.grid(row=7, columnspan=2, pady=10)
 
-text_widget = scrolledtext.ScrolledText(root, width=80, height=20)
-text_widget.pack(padx=10, pady=10)
+# Create a ScrolledText widget for output
+text_widget = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=100, height=30)
+text_widget.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+# Make the root window resizable
+root.geometry("800x600")
+root.minsize(600, 400)
+root.resizable(True, True)
 
 root.mainloop()
 
