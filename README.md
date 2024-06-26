@@ -5,7 +5,7 @@ Created by Rasmus Wiegman \ admin@latency.dk
     -  Please for any improvements or other suggestions, create an issue or send an email..
 
 
-Python script to gather information, regarding domains in a list
+Python script to gather information, regarding domains
 
 Usage domaintool.py
 
@@ -16,6 +16,7 @@ Usage domaintool.py
 OPTIONS:
   -h            Show this help message
   -f            Set filepath
+  -d            Set DNS Server to be used
   -all          Look up all
   -dns          Look up Nameservers
   -mx           Look up MX records
