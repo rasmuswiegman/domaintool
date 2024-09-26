@@ -18,7 +18,7 @@ Usage domaintool.py
 OPTIONS:
   -h            Show this help message
   -f            Set filepath
-  -d [x.x.x.x]  Set DNS Server to be used
+  -d            Set DNS Server to be used
   -all          Look up all
   -dns          Look up Nameservers
   -mx           Look up MX records
