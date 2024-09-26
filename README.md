@@ -2,21 +2,23 @@
 
 Created by Rasmus Wiegman \ admin@latency.dk
       
-<h1>Please for any improvements or other suggestions, create an issue or send an email..</h1>
+<h4>Please for any improvements or other suggestions, create an issue or send an email..</h4>
 
 
 Python script to gather information, regarding domains
 
 Usage domaintool.py
 
- Usage: <br>./domaintool.py -f <file_path> [OPTIONS]
+ Usage: 
 <br>
-        ./domaintool.py [OPTIONS] <domain1> <domain2> ...
+./domaintool.py -f <file_path> [OPTIONS]
+<br>
+./domaintool.py [OPTIONS] <domain1> <domain2> ...
 
 OPTIONS:
   -h            Show this help message
   -f            Set filepath
-  -d            Set DNS Server to be used
+  -d [x.x.x.x]  Set DNS Server to be used
   -all          Look up all
   -dns          Look up Nameservers
   -mx           Look up MX records
@@ -26,4 +28,4 @@ OPTIONS:
   -r            Perform reverse lookup from IP
 
 
-<h1>In the folder gui-option/dist/ ypu can run the script as a GUI application.</h1>
+<h4>In the folder gui-option/dist/ ypu can run the script as a GUI application.</h4>
