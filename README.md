@@ -15,9 +15,12 @@ Usage domaintool.py
 <br>
 ./domaintool.py [OPTIONS] <domain1> <domain2> ...
 
+Flags:
+   -f           Set filepath
+
+
 OPTIONS:
   -h            Show this help message
-  -f            Set filepath
   -d            Set DNS Server to be used
   -all          Look up all
   -dns          Look up Nameservers
