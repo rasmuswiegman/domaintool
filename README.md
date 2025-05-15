@@ -20,7 +20,7 @@ Flags:
 
 
 OPTIONS:
-  -h            Show this help message
+  -h            Show this help message <br>
   -d            Set DNS Server to be used
   -all          Look up all
   -dns          Look up Nameservers
