@@ -19,16 +19,16 @@ Flags:
    -f           Set filepath
 
 
-OPTIONS:
+OPTIONS:<br>
   -h            Show this help message <br>
-  -d            Set DNS Server to be used
-  -all          Look up all
-  -dns          Look up Nameservers
-  -mx           Look up MX records
-  -dnssec/ds    Look up if DNSSEC is enabled
-  -txt          Look up TXT Records
-  -a            Look up A Records
-  -r            Perform reverse lookup from IP
+  -d            Set DNS Server to be used <br>
+  -all          Look up all <br>
+  -dns          Look up Nameservers <br>
+  -mx           Look up MX records <br>
+  -dnssec/ds    Look up if DNSSEC is enabled <br>
+  -txt          Look up TXT Records <br>
+  -a            Look up A Records <br>
+  -r            Perform reverse lookup from IP <br>
 
 
 <h4>In the folder gui-option/dist/ ypu can run the script as a GUI application.</h4>
