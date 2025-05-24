@@ -2,24 +2,24 @@
 
 Created by Rasmus Wiegman \ admin@latency.dk
       
-<h4>Please for any improvements or other suggestions, create an issue or send an email..</h4>
+#### Please for any improvements or other suggestions, create an issue or send an email..</
 
 
 Python script to gather information, regarding domains
 
 Usage domaintool.py
 
- Usage: 
+#### Usage: 
 <br>
 ./domaintool.py -f <file_path> [OPTIONS]
 <br>
 ./domaintool.py [OPTIONS] <domain1> <domain2> ...
 
-Flags:
+#### Flags:
    -f           Set filepath
 
 
-OPTIONS:<br>
+#### OPTIONS:<br>
   -h            Show this help message <br>
   -d            Set DNS Server to be used <br>
   -all          Look up all <br>
@@ -30,5 +30,20 @@ OPTIONS:<br>
   -a            Look up A Records <br>
   -r            Perform reverse lookup from IP <br>
 
+### Install as system wide service
 
-<h4>In the folder gui-option/dist/ ypu can run the script as a GUI application.</h4>
+```chmod +x install_domaintool.sh```
+
+./install_domaintool.sh
+
+After install
+
+````domaintool -all example.com````     # Use from anywhere
+
+````man domaintool````                      # Read manual
+
+#### Uninstall
+bash./install_domaintool.sh uninstall
+
+
+###### In the folder gui-option/dist/ you can run the script as a GUI application.
