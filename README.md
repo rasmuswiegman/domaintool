@@ -43,7 +43,7 @@ After install
 ````man domaintool````                      # Read manual
 
 #### Uninstall
-bash./install_domaintool.sh uninstall
+```./install_domaintool.sh uninstall```
 
 
 ###### In the folder gui-option/dist/ you can run the script as a GUI application.
