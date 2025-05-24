@@ -3,6 +3,8 @@
 import dns.resolver
 import dns.reversename
 import sys
+import whois
+from datetime import datetime
 
 # colors
 GREEN = '\033[32;1m'
@@ -94,6 +96,74 @@ def get_dmarc_policy(domain, resolver):
         print("Error while fetching DMARC Policy for", domain)
         print(e)
 
+def get_whois_info(domain):
+    try:
+        print(f"{YELLOW}WHOIS Information for {domain}{ENDC}")
+        w = whois.whois(domain)
+        
+        # Format and display key WHOIS information
+        if w.domain_name:
+            if isinstance(w.domain_name, list):
+                print(f"{GREEN}Domain Name: {w.domain_name[0]}{ENDC}")
+            else:
+                print(f"{GREEN}Domain Name: {w.domain_name}{ENDC}")
+        
+        if w.registrar:
+            print(f"{GREEN}Registrar: {w.registrar}{ENDC}")
+        
+        if w.creation_date:
+            if isinstance(w.creation_date, list):
+                creation_date = w.creation_date[0]
+            else:
+                creation_date = w.creation_date
+            if isinstance(creation_date, datetime):
+                print(f"{GREEN}Creation Date: {creation_date.strftime('%Y-%m-%d %H:%M:%S')}{ENDC}")
+            else:
+                print(f"{GREEN}Creation Date: {creation_date}{ENDC}")
+        
+        if w.expiration_date:
+            if isinstance(w.expiration_date, list):
+                expiration_date = w.expiration_date[0]
+            else:
+                expiration_date = w.expiration_date
+            if isinstance(expiration_date, datetime):
+                print(f"{GREEN}Expiration Date: {expiration_date.strftime('%Y-%m-%d %H:%M:%S')}{ENDC}")
+            else:
+                print(f"{GREEN}Expiration Date: {expiration_date}{ENDC}")
+        
+        if w.updated_date:
+            if isinstance(w.updated_date, list):
+                updated_date = w.updated_date[0]
+            else:
+                updated_date = w.updated_date
+            if isinstance(updated_date, datetime):
+                print(f"{GREEN}Updated Date: {updated_date.strftime('%Y-%m-%d %H:%M:%S')}{ENDC}")
+            else:
+                print(f"{GREEN}Updated Date: {updated_date}{ENDC}")
+        
+        if w.name_servers:
+            print(f"{GREEN}Name Servers:{ENDC}")
+            for ns in w.name_servers:
+                print(f"{GREEN}  {ns}{ENDC}")
+        
+        if w.status:
+            if isinstance(w.status, list):
+                print(f"{GREEN}Status:{ENDC}")
+                for status in w.status:
+                    print(f"{GREEN}  {status}{ENDC}")
+            else:
+                print(f"{GREEN}Status: {w.status}{ENDC}")
+        
+        if w.org:
+            print(f"{GREEN}Organization: {w.org}{ENDC}")
+        
+        if w.country:
+            print(f"{GREEN}Country: {w.country}{ENDC}")
+            
+    except Exception as e:
+        print(f"{RED}Error while fetching WHOIS information for {domain}{ENDC}")
+        print(f"{RED}Error details: {e}{ENDC}")
+
 def reverse_lookup(ip, resolver):
     try:
         reversed_ip = dns.reversename.from_address(ip)
@@ -136,6 +206,10 @@ def process_domains(domains, options, resolver):
 
         if '-all' in options or '-dmarc' in options:
             get_dmarc_policy(domain, resolver)
+        
+        if '-all' in options or '-who' in options:
+            get_whois_info(domain)
+        
         print()
 
 def process_file(file_path, options, resolver):
@@ -170,6 +244,7 @@ def print_help():
     print("  -txt       Look up TXT Records")
     print("  -a         Look up A Records")
     print("  -dmarc     Look up DMARC Policy")
+    print("  -who       Look up WHOIS information")
     print("  -r         Perform reverse lookup from IP")
     print("  -d, --dns-server <custom_dns>  Specify a custom DNS server")
     sys.exit(0)
