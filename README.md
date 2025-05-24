@@ -46,4 +46,4 @@ After install
 ```./install_domaintool.sh uninstall```
 
 
-###### In the folder gui-option/dist/ you can run the script as a GUI application.
+In the folder gui-option/dist/ you can run the script as a GUI application. However, I do not update it, with new features, as it was just to test, if it would be usable. I found the CLI version to me faster and easier to use.
