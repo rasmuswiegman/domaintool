@@ -80,6 +80,15 @@ class DNSLookup:
         else:
             output.write(f"{Colors.RED}No MX Records found ({result.error}) for {domain}{Colors.ENDC}\n")
 
+    def get_cname_records(self, domain: str, output: StringIO) -> None:
+        result = self._safe_resolve(domain, 'cname')
+        output.write(f"{Colors.YELLOW}cname Records for {domain}{Colors.ENDC}\n")
+        if result.success:
+            for record in result.data:
+                output.write(f"{Colors.GREEN}{record}{Colors.ENDC}\n")
+        else:
+            output.write(f"{Colors.RED}No MX Records found ({result.error}) for {domain}{Colors.ENDC}\n")
+
     def get_txt_records(self, domain: str, output: StringIO) -> None:
         result = self._safe_resolve(domain, 'TXT')
         output.write(f"{Colors.YELLOW}TXT records for {domain}{Colors.ENDC}\n")
@@ -231,6 +240,7 @@ class DomainProcessor:
             'mx': self.dns_lookup.get_mx_records,
             'dnssec': self.dns_lookup.check_dnssec,
             'txt': self.dns_lookup.get_txt_records,
+            'cname': self.dns_lookup.get_cname_records,
             'dmarc': self.dns_lookup.get_dmarc_policy,
             'who': self.whois_lookup.get_whois_info
         }
