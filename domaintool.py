@@ -87,7 +87,7 @@ class DNSLookup:
             for record in result.data:
                 output.write(f"{Colors.GREEN}{record}{Colors.ENDC}\n")
         else:
-            output.write(f"{Colors.RED}No MX Records found ({result.error}) for {domain}{Colors.ENDC}\n")
+            output.write(f"{Colors.RED}No CNAME Records found ({result.error}) for {domain}{Colors.ENDC}\n")
 
     def get_txt_records(self, domain: str, output: StringIO) -> None:
         result = self._safe_resolve(domain, 'TXT')
