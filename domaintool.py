@@ -180,8 +180,8 @@ class WHOISLookup:
                 'Creation Date': format_datetime(get_first_value(w.creation_date)),
                 'Expiration Date': format_datetime(get_first_value(w.expiration_date)),
                 'Updated Date': format_datetime(get_first_value(w.updated_date)),
-                'Organization': w.org,
-                'Country': w.country
+                #'Organization': w.org,
+                #'Country': w.country
             }
             
             for field_name, value in info_fields.items():
@@ -220,7 +220,37 @@ class WHOISLookup:
                         print(msg)
                     else:
                         output.write(f"{msg}\n")
-                    
+
+            # Hanndle name og registrant
+            if w.registrant_name:
+                msg = f"{Colors.GREEN}Registrant Name: {w.registrant_name}{Colors.ENDC}"
+                if direct_print:
+                    print(msg)
+                else:
+                    output.write(f"{msg}\n")
+
+            # Hanndle address of registrant
+            if w.registrant_address:
+                msg = f"{Colors.GREEN}Registrant Address: {w.registrant_address}{Colors.ENDC}"
+                if direct_print:
+                    print(msg)
+                else:
+                    output.write(f"{msg}\n")
+
+            if w.registrant_postal_code:
+                msg = f"{Colors.GREEN}Registrant Postal Code: {w.registrant_postal_code}{Colors.ENDC}"
+                if direct_print:
+                    print(msg)
+                else:
+                    output.write(f"{msg}\n")
+            
+            if w.registrant_country:
+                msg = f"{Colors.GREEN}Registrant Country: {w.registrant_country}{Colors.ENDC}"
+                if direct_print:
+                    print(msg)
+                else:
+                    output.write(f"{msg}\n")
+        
         except Exception as e:
             msg = f"{Colors.RED}Error fetching WHOIS for {domain}: {e}{Colors.ENDC}"
             if direct_print:
