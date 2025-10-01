@@ -221,7 +221,7 @@ class WHOISLookup:
                     else:
                         output.write(f"{msg}\n")
 
-            # Hanndle name og registrant
+            # Handle name of registrant
             if w.registrant_name:
                 msg = f"{Colors.GREEN}Registrant Name: {w.registrant_name}{Colors.ENDC}"
                 if direct_print:
@@ -229,7 +229,7 @@ class WHOISLookup:
                 else:
                     output.write(f"{msg}\n")
 
-            # Hanndle address of registrant
+            # Handle address of registrant
             if w.registrant_address:
                 msg = f"{Colors.GREEN}Registrant Address: {w.registrant_address}{Colors.ENDC}"
                 if direct_print:
